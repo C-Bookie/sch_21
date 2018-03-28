@@ -91,18 +91,21 @@ def test2():
             while basicBot(j):
                 hitPlayer(j)
         printHands()
-        winners = [0]
-        toBeat = getScore(0)
-        i = 1
-        while i < len(hands):
+        winners = []
+        toBeat = 0
+        for i in range(len(hands)):
             s = getScore(i)
-            if (s > toBeat):
-                winners = [i]
-                toBeat = s
-            elif (s == toBeat):
-                winners.append(i)
+            if (s < 21):
+                if (s > toBeat):
+                    winners = [i]
+                    toBeat = s
+                elif (s == toBeat):
+                    winners.append(i)
             i += 1
-        if (len(winners) == 1):
+
+        if (len(winners) == 0):
+            print("No one wins")
+        elif (len(winners) == 1):
             print("Player " + str(winners[0]+1) + " wins")
             global scores
             scores[winners[0]] += 1
