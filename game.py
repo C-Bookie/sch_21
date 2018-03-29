@@ -10,6 +10,12 @@ scores = [0]*players
 suites = ["clubs", "diamonds", "hearts", "spades"]
 ranks = ["ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"]
 
+printOut = True
+
+def debug(msg):
+    if (printOut):
+        print(msg)
+
 def hitMe():
     if len(deck) > 0:
         choice = random.randint(0, len(deck)-1)
@@ -20,6 +26,9 @@ def hitMe():
 def hitPlayer(p):
     hands[p].append(hitMe())
     return getScore(p) > 21
+
+def interface(p):   #room for extra potential controls
+    return hitPlayer(p)
 
 def init(p):
     global deck
@@ -75,58 +84,70 @@ def printHands():
 def basicBot(p):
     return getScore(p) < 15
 
-def test1():
-    init(1)
-    while not hitPlayer(0):
-        continue
+#def ann(p):
+#    tflearn.conv_2d(x, 32, 5, activation='relu', name='conv1')
+
+def controller(p):  #room for epansion
+#    if (p == 0):
+#        return ann(p)
+    return basicBot(p)
+
+def game(p):
+    init(players)
+
+    for i in range(len(hands)):
+        j = (i + p) % len(hands)
+        while controller(j):    #true while returning "hit me"
+            if (interface(j)):
+                debug("Player " + str(j) + " busted")
+                break
+
     printHands()
 
-def test2():
+    winners = []
+    toBeat = 0
+    for i in range(len(hands)):
+        s = getScore(i)
+        if (s < 21):
+            if (s > toBeat):
+                winners = [i]
+                toBeat = s
+            elif (s == toBeat):
+                winners.append(i)
+        i += 1
+
+    if (len(winners) == 0):
+        pass
+        debug("No one wins")
+    elif (len(winners) == 1):
+        debug("Player " + str(winners[0] + 1) + " wins")
+        global scores
+        scores[winners[0]] += 1
+    else:
+        msg = "Players "
+        for idxI, i in enumerate(winners):
+            msg += str(i + 1)
+            if idxI == len(winners) - 2:
+                msg += " and "
+            elif idxI < len(winners) - 2:
+                msg += ", "
+        debug(msg + " drew")
+    debug("-------------------------")
+
+
+def test():
     player = 0
-    games = 100
+    games = 1000
     while games > 0:
-        init(players)
-        for i in range(len(hands)):
-            j = (i+player)%len(hands)
-            while basicBot(j):
-                hitPlayer(j)
-        printHands()
-        winners = []
-        toBeat = 0
-        for i in range(len(hands)):
-            s = getScore(i)
-            if (s < 21):
-                if (s > toBeat):
-                    winners = [i]
-                    toBeat = s
-                elif (s == toBeat):
-                    winners.append(i)
-            i += 1
-
-        if (len(winners) == 0):
-            print("No one wins")
-        elif (len(winners) == 1):
-            print("Player " + str(winners[0]+1) + " wins")
-            global scores
-            scores[winners[0]] += 1
-        else:
-            msg = "Players "
-            for idxI, i in enumerate(winners):
-                msg += str(i+1)
-                if idxI== len(winners)-2:
-                    msg += " and "
-                elif idxI < len(winners)-2:
-                    msg += ", "
-            print(msg + " drew")
-        print("-------------------------")
-
+        debug(1000-games)
+        game(player)
         player=(player+1)%len(hands)
         games -= 1
     print(scores)
 
 
 if __name__ == '__main__':
-    test2()
+    test()
 
 
 
