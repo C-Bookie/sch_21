@@ -2,6 +2,7 @@
 import random
 import math
 
+import numpy
 from gym import spaces
 
 class Game():
@@ -18,7 +19,7 @@ class Game():
         self.prize = False
 
         self.action_space = spaces.Discrete(2)  #shall define the boolean input, True for 'hit me'
-        #self.observation_space = spaces.Box(-high, high)   #fixme
+        self.observation_space = spaces.Discrete(52)    #an arrray representing the deck, each element is true if the bot has the card in their hand
 
     def debug(self, msg):
         if (self.printOut):
@@ -98,6 +99,11 @@ class Game():
             return 50
         return 0
 
+    def observation(self):
+        r = np.array()
+        for i in range(52):
+            r.append(i in self.hands[0])
+        return r
 
     def step(self, hit): #ANN contorl
         if (hit):
@@ -106,7 +112,7 @@ class Game():
         else:
             self.currentPlayer += 1
             self.play()
-        return {}, self.reward(), self.done, {}
+        return self.observation(), self.reward(), self.done, {}
 
     def game(self):
         self.deck = []
