@@ -2,7 +2,7 @@
 import random
 import math
 
-import numpy
+import numpy as np
 from gym import spaces
 
 class Game():
