@@ -1,7 +1,6 @@
 
 import random
 import math
-import tflearn
 
 class Game():
     players = 5
@@ -14,8 +13,6 @@ class Game():
 
     printOut = False
     prize = False
-
-#    def __init__(self):
 
     def debug(self, msg):
         if (self.printOut):
