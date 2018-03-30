@@ -15,7 +15,7 @@ class Game():
         self.suites = ["clubs", "diamonds", "hearts", "spades"]
         self.ranks = ["ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"]
 
-        self.printOut = False
+        self.printOut = True
         self.prize = False
 
         self.action_space = spaces.Discrete(2)  #shall define the boolean input, True for 'hit me'
@@ -83,6 +83,7 @@ class Game():
     def printHands(self):
         for p in range(len(self.hands)):
             self.printHand(p)
+        self.debug(self.scores)
 
     def basicPlay(self, p):
         while self.getScore(p) < 15 and not self.hitPlayer(p):  # true while returning "hit me"
@@ -100,10 +101,10 @@ class Game():
         return 0
 
     def observation(self):
-        r = np.array()
+        r = []
         for i in range(52):
             r.append(i in self.hands[0])
-        return r
+        return np.array(r)
 
     def step(self, hit): #ANN contorl
         if (hit):
@@ -179,7 +180,7 @@ class Game():
             self.reset()
             don = False
             i = 1
-#            while self.basicPlay(0) and not don:
+            #            while self.basicPlay(0) and not don:
             while i > 0 and not don:
                 obs, rew, don, inf = self.step(True)
                 i -= 1
