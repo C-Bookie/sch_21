@@ -2,17 +2,23 @@
 import random
 import math
 
+from gym import spaces
+
 class Game():
-    players = 5
-    deck = []
-    hands = []
-    scores = [0]*players
+    def __init__(self):
+        self.players = 5
+        self.deck = []
+        self.hands = []
+        self.scores = [0]*self.players
 
-    suites = ["clubs", "diamonds", "hearts", "spades"]
-    ranks = ["ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"]
+        self.suites = ["clubs", "diamonds", "hearts", "spades"]
+        self.ranks = ["ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"]
 
-    printOut = False
-    prize = False
+        self.printOut = False
+        self.prize = False
+
+        self.action_space = spaces.Discrete(2)  #shall define the boolean input, True for 'hit me'
+        #self.observation_space = spaces.Box(-high, high)   #fixme
 
     def debug(self, msg):
         if (self.printOut):
@@ -89,11 +95,9 @@ class Game():
     def reward(self):
         if (self.prize):
             self.prize = False
-        return 50 if self.prize else 0
+            return 50
+        return 0
 
-    class action_space():
-        def sample(self):
-            return bool(random.randint(0, 1))
 
     def step(self, hit): #ANN contorl
         if (hit):

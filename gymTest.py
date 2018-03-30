@@ -1,5 +1,8 @@
-#credits to sentdex
-#https://pythonprogramming.net/openai-cartpole-neural-network-example-machine-learning-tutorial/
+'''
+    credits for initial code and commenting to Sentdex
+    originally developed as a solution for the CartPole enviorment provided by the gym libarry developed by Open AI using TFlearn
+    https://pythonprogramming.net/openai-cartpole-neural-network-example-machine-learning-tutorial/
+'''
 
 import gym
 import random
@@ -13,10 +16,9 @@ from collections import Counter
 import game
 
 LR = 1e-3
-if True:
-    env = game.Game()
-else:
-    env = gym.make("CartPole-v0")
+
+env = game.Game()
+#env = gym.make("CartPole-v0")
 
 env.reset()
 goal_steps = 500
@@ -24,7 +26,6 @@ score_requirement = 50
 initial_games = 10000
 
 if __name__ == '__main__':
-#    some_random_games_first()
     if False:
 #    def some_random_games_first():
         # Each of these is its own game.
@@ -66,7 +67,7 @@ if __name__ == '__main__':
         # for each frame in 200
         for _ in range(goal_steps):
             # choose random action (0 or 1)
-            action = random.randrange(0, 2)
+            action = action = env.action_space.sample()
             # do it!
             observation, reward, done, info = env.step(action)
 
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     np.save('saved.npy', training_data_save)
 
     # some stats here, to further illustrate the neural network magic!
-    print('Average accepted score:', mean(accepted_scores))
+    print('Average accepted score:', mean(accepted_scores)) #errors if accepted_scores is 0, implying that training failed
     print('Median score for accepted scores:', median(accepted_scores))
     print(Counter(accepted_scores))
 
