@@ -15,7 +15,7 @@ class Game():
         self.suites = ["clubs", "diamonds", "hearts", "spades"]
         self.ranks = ["ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"]
 
-        self.printOut = True
+        self.printOut = False
         self.prize = False
 
         self.action_space = spaces.Discrete(2)  #shall define the boolean input, True for 'hit me'
