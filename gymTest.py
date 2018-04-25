@@ -13,11 +13,14 @@ from tflearn.layers.estimator import regression
 from statistics import median, mean
 from collections import Counter
 
-import game
+import blackJack
 
 LR = 1e-3
 
-env = game.Game()
+#enviorment requiers reset() step(action) render()
+#enviorment also requires an action_space and observation_space
+
+env = blackJack.Game()
 #env = gym.make("CartPole-v0")
 
 env.reset()
