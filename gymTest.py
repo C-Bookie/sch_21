@@ -14,13 +14,15 @@ from statistics import median, mean
 from collections import Counter
 
 import blackJack
+import checkers
 
 LR = 1e-3
 
 #enviorment requiers reset() step(action) render()
 #enviorment also requires an action_space and observation_space
 
-env = blackJack.Game()
+#env = blackJack.Game()
+env = checkers.Game()
 #env = gym.make("CartPole-v0")
 
 env.reset()
