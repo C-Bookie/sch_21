@@ -25,7 +25,6 @@ LR = 1e-3
 env = checkers.Game()
 #env = gym.make("CartPole-v0")
 
-env.reset()
 score_requirement = 50
 initial_games = 10000
 
@@ -36,9 +35,9 @@ if __name__ == '__main__':
     for _ in range(initial_games):
         score = 0
         game_memory = []
-        prev_observation = []
+        prev_observation = env.reset()
         while True:
-            action = action = env.action_space.sample()
+            action = env.actSpace.sample()
             observation, reward, done, info = env.step(action)
 
             if len(prev_observation) > 0:
@@ -56,8 +55,6 @@ if __name__ == '__main__':
                     output = [1, 0]
 
                 training_data.append([data[0], output])
-
-        env.reset()
         scores.append(score)
 
     training_data_save = np.array(training_data)
