@@ -21,8 +21,8 @@ LR = 1e-3
 #enviorment requiers reset() step(action) render()
 #enviorment also requires an action_space and observation_space
 
-#env = blackJack.Game()
-env = checkers.Game()
+env = blackJack.Game()
+#env = checkers.Game()
 #env = gym.make("CartPole-v0")
 
 score_requirement = 50

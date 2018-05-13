@@ -28,7 +28,6 @@ class Game():
         for player in range(2):
             for y in range(int(s.sizeY*(3/8))):
                 for x in range(int(s.sizeX / 2)):
-                    #print(str(x*2+((y+player)%2)) + ", " + str(y if player == 0 else s.sizeY-y-1) + " = " + str(player + 1))
                     s.board[y if player == 0 else s.sizeY-y-1][x*2+((y+player)%2)] = (player*PLAYER) | ACTIVE
         s.counter = 0
         return s.observation()
@@ -41,6 +40,13 @@ class Game():
     def observation(s):
         return np.ndarray(s.board)
 
+    def flipObs(s):
+        r = [[0 for _x in range(s.sizeX)] for _y in range(s.sizeY)]
+        for y in range(s.sizeY):
+            for x in range(s.sizeY):
+                r[y][x] = s.board[s.sizeY -y -1][s.sizeX -x -1]
+        return np.ndarray(r)
+
     #currently only functionality to make one move per turn, no jumping chains
     def step(s, act):    #action=[Yposition, Xposition, Ydirection, Xdirection]
         #validators
@@ -51,28 +57,30 @@ class Game():
             tar = s.board[act[0] +(act[2]*2 -1)][act[1] +(act[3]*2 -1)] #selected target
             if not tar & ACTIVE:   #if space is free
                 if act[0] +(act[2]*2 -1) == s.sizeY-1:    #if upgrade to king
-                        s.board[act[0] +(act[2]*2 -1)][act[1] +(act[3]*2 -1)] = sel | KING
+                    s.board[act[0] +(act[2]*2 -1)][act[1] +(act[3]*2 -1)] = sel | KING
                 else:
-                    s.board[act[0] +(act[2]*2 -1)][act[1] +(act[3] *2 -1)] = sel   #copy
-                s.board[act[0]][act[1]] = 1   #remove
+                    s.board[act[0] +(act[2]*2 -1)][act[1] +(act[3]*2 -1)] = sel   #copy
+                s.board[act[0]][act[1]] = 0   #remove
             else:
-                if (act[0] + (act[2] * 4 - 2) in range(s.sizeY) and act[1] + (act[3] * 4 - 2) in range(s.sizeX)):   #if you don't jump off the board
-                    if s.board[act[0] + (act[2] * 4 - 2)][act[1] + (act[3] * 4 - 2)] & 0b001:   #and the space to jump to is free
-                        if s.board[act[0] + (act[2] * 2 - 1)][act[1] + (act[3] * 2 - 1)] & 0b010:   #and your acctually attacking an enimy
-                            s.board[act[0] + (act[2] * 4 - 2)][act[1] + (act[3] * 4 - 2)] = s.board[act[0]][act[1]]  # copy
-                            s.board[act[0]][act[1]] = 1  # remove
-                            s.board[act[0] + (act[2] * 2 - 1)][act[1] + (act[3] * 2 - 1)] = 1   #take piece
-                            s.rewBuf += s.defRew / 10  #reward
-                            if act[0] + (act[2] * 2 - 1) == s.sizeY - 1:  #if upgrade to king
-                                s.board[act[0] + (act[2] * 2 - 1)][act[1] + (act[3] * 2 - 1)] = s.board[act[0]][act[1]] = s.board[act[0] + (act[2] * 2 - 1)][act[1] + (act[3] * 2 - 1)] = s.board[act[0]][act[1]] | 0b100
+                if (act[0] +(act[2]*4 -2) in range(s.sizeY) and act[1] +(act[3]*4 -2) in range(s.sizeX)):   #if you don't jump off the board
+                    jmp = s.board[act[0] +(act[2]*4 -2)][act[1] +(act[3]*4 -2)]
+                    if jmp & ACTIVE:   #and the space to jump to is free
+                        if tar & PLAYER:   #and your acctually attacking an enimy
+                            if act[0] + (act[2] * 2 - 1) == s.sizeY - 1:  # if upgrade to king
+                                s.board[act[0] +(act[2]*4 -2)][act[1] +(act[3]*4 -2)] = s.board[act[0]][act[1]] | KING
+                            else:
+                                s.board[act[0] +(act[2]*4 -2)][act[1] +(act[3]*4 -2)] = s.board[act[0]][act[1]]  # copy
+                            s.board[act[0]][act[1]] = 0  # remove
+                            s.board[act[0] +(act[2]*2 -1)][act[1]+(act[3]*2 -1)] = 0   #take piece
+                            s.rewBuf += s.defRew / 3  #reward
                         else:
-                            s.rewBuf -= s.defRew / 10  # jumping falls off board
+                            s.rewBuf -= s.defRew / 12  # jumping falls off board
                     else:
-                        s.rewBuf -= s.defRew / 10  #jumping falls off board
+                        s.rewBuf -= s.defRew / 12  #jumping falls off board
                 else:
-                    s.rewBuf -= s.defRew / 10  #jumping falls off board
+                    s.rewBuf -= s.defRew / 12  #jumping falls off board
         else: #if the move was invalid
-            s.rewBuf -= s.defRew/10    #cell empty
+            s.rewBuf -= s.defRew/12    #cell empty
 
         if s.rewBuf >= 0: #if the move was valid
             s.counter+=1
@@ -93,15 +101,15 @@ class Game():
                 fill = "~" if (x+y)%2 else " "
                 r += "|" + fill
                 cell = s.board[s.sizeY-y-1][x]
-                if not cell & 0b001:
+                if not cell & ACTIVE:
                     r += fill
-                elif cell & 0b010 > 0:
-                    if cell & 0b100 > 0:
+                elif cell & PLAYER > 0:
+                    if cell & KING > 0:
                         r += "B"
                     else:
                         r += "D"
                 else :
-                    if cell & 0b100 > 0:
+                    if cell & KING > 0:
                         r += "M"
                     else:
                         r += "V"
@@ -111,10 +119,13 @@ class Game():
         print(r)
 
 if __name__ == '__main__':
-    game = Game()
-    game.reset()
-    game.render()
+#    game = Game()
+#    game.reset()
+#    game.render()
 
-
+    a = [0]
+    b = [a]
+    b[0] = 1
+    print (a is b[0])
 
 
