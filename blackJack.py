@@ -18,7 +18,7 @@ class Game():
         self.printOut = False
         self.prize = False
 
-        self.action_space = spaces.Discrete(2)  #shall define the boolean input, True for 'hit me'
+        self.actSpace = spaces.Discrete(2)  #shall define the boolean input, True for 'hit me'
         self.observation_space = spaces.Discrete(52)    #an arrray representing the deck, each element is true if the bot has the card in their hand
 
     def debug(self, msg):
@@ -93,6 +93,7 @@ class Game():
         self.done = False
         self.dealer = random.randint(0, self.players-1)
         self.game()
+        return self.observation()
 
     def reward(self):
         if (self.prize):
